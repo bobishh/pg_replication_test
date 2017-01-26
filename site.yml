@@ -1,0 +1,11 @@
+---
+- name: Set primary and standby servers
+  hosts: data_primary
+  roles:
+    - open_primary_db
+
+- name: Provision standby servers
+  hosts: data_standby
+  roles:
+    - open_standby_db
+

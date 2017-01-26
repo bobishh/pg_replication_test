@@ -1,0 +1,13 @@
+- src: sansible.users_and_groups
+
+- src: geerlingguy.ruby
+
+- src: ANXS.postgresql
+
+- src: geerlingguy.nodejs
+
+- src: pinkeen.logrotate
+
+- src: geerlingguy.redis
+
+- src: jpnewman.elasticsearch

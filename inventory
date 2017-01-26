@@ -1,0 +1,16 @@
+[data_primary:children]
+local_standby
+
+[data_standby:children]
+local_primary
+
+[local_standby]
+postgres_standby_1 ssh_host=192.168.100.20 ssh_user=vagrant ssh_password=vagrant listen_address=192.168.100.20
+postgres_standby_2 ssh_host=192.168.100.30 ssh_user=vagrant ssh_password=vagrant listen_address=192.168.100.20
+
+[local_primary]
+postgres_primary ssh_host=192.168.100.10 ssh_user=vagrant ssh_password=vagrant
+
+[local:children]
+local_primary
+local_standby
