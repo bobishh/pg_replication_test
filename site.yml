@@ -1,11 +1,17 @@
 ---
 - name: Set primary and standby servers
-  hosts: data_primary
+  hosts: all
+  become: true
+  become_user: root
+  vars:
+    postgres_databases:
+      - name: openbank
   roles:
-    - open_primary_db
+    - ANXS.postgresql
 
 - name: Provision standby servers
   hosts: data_standby
+  become: true
+  become_user: root
   roles:
     - open_standby_db
-

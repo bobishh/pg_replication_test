@@ -1,0 +1,28 @@
+---
+- name: Stop the server
+  service:
+    name: postgresql
+    state: stopped
+
+- name: Backup old data directory
+  shell: cd '{{ postgresql_data_directory }}/.. ;tar -cvzf /tmp/data_backup-`date +%s`.tgz {{ postgresql_data_directory }}'
+
+- name: Remove old data directory
+  file:
+    path: '{{ postgresql_data_directory }}'
+    state: absent
+
+- name: Create new data directory
+  file:
+    path: '{{ postgresql_data_directory }}'
+    mode: go-rwx
+    state: directory
+
+- name: Pull data from master and start replication on slave
+  shell: 'cd {{ postgres_data_directory }} && pg_basebackup -P -R -X stream -c fast -h {{ primary_host }} -U {{ postgresql_admin_user }} -D ./'
+
+- name: Start the server
+  service:
+    name: postgresql
+    state: started
+    enabled: true

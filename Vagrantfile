@@ -14,6 +14,6 @@ Vagrant.configure('2') do |config|
   config.vm.define 'postres_standby_2' do |acs|
     acs.vm.box = 'ubuntu/trusty64'
     acs.vm.hostname = 'ps2'
-    acs.vm.network  'private_network', ip: '192.168.10.30'
+    acs.vm.network  'private_network', ip: '192.168.100.30'
   end
 end
