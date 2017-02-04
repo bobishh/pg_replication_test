@@ -6,7 +6,7 @@ local_standby
 
 [local_standby]
 postgres_standby_1 ansible_host=192.168.100.20 ansible_ssh_password=vagrant listen_address=192.168.100.20 ansible_user=vagrant
-postgres_standby_2 ansible_host=192.168.100.30 ansible_ssh_password=vagrant listen_address=192.168.100.20 ansible_user=vagrant
+postgres_standby_2 ansible_host=192.168.100.30 ansible_ssh_password=vagrant listen_address=192.168.100.30 ansible_user=vagrant
 
 [local_primary]
 postgres_primary ansible_host=192.168.100.10 ansible_ssh_password=vagrant ansible_user=vagrant listen_address=192.168.100.10 
@@ -14,3 +14,10 @@ postgres_primary ansible_host=192.168.100.10 ansible_ssh_password=vagrant ansibl
 [local:children]
 local_primary
 local_standby
+
+[web:children]
+local_standby
+
+[data:children]
+data_primary
+data_standby

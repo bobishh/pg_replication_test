@@ -1,0 +1,20 @@
+primary_host: 192.168.100.10
+
+postgresql_version: 9.5
+postgresql_fsync: off
+postgresql_wal_level: hot_standby
+postgresql_listen_addresses:
+  - '{{ listen_address }}'
+
+postgresql_max_wal_senders: 24
+
+postgresql_cluster_name: 'main'
+postgresql_admin_user: postgres
+
+postgresql_data_directory: '/var/lib/postgresql/{{postgresql_version}}/{{postgresql_cluster_name}}'
+
+postgresql_pg_hba_default:
+  - { type: local, database: all, user: all, address: '',             method: '{{ postgresql_default_auth_method }}', comment: '"local" is for Unix domain socket connections only' }
+  - { type: host,  database: all, user: all, address: '192.168.100.1/24', method: '{{ postgresql_default_auth_method }}', comment: 'IPv4 connections:' }
+  - { type: host,  database: replication, user: all, address: '192.168.100.1/24', method: '{{ postgresql_default_auth_method }}', comment: 'IPv4 replication connections:' }
+  - { type: host,  database: all, user: all, address: '::1/128',      method: '{{ postgresql_default_auth_method }}', comment: 'IPv6 local connections:' }

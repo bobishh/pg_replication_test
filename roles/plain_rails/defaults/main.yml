@@ -1,0 +1,4 @@
+---
+app_name: 'testapp'
+app_user: 'vagrant'
+app_home: '/home/{{ app_user }}/{{ app_name }}'

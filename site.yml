@@ -1,17 +1,6 @@
 ---
-- name: Set primary and standby servers
-  hosts: all
-  become: true
-  become_user: root
-  vars:
-    postgres_databases:
-      - name: openbank
-  roles:
-    - ANXS.postgresql
-
-- name: Provision standby servers
-  hosts: data_standby
-  become: true
-  become_user: root
-  roles:
-    - open_standby_db
+# Environment for testing postgresql async replication
+# and failover with pgpool2 and rails web frontends
+- include: setup_postgres.yml
+- include: add_standby.yml
+- include: web_and_pgpool2.yml

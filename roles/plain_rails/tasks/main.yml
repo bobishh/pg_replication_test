@@ -1,0 +1,77 @@
+---
+- name: Install postgres dev libs to allow installation of gem pg
+  apt:
+    name: libpq-dev
+    state: present
+
+- name: Install rails gem
+  become_user: '{{ app_user }}'
+  gem:
+    name: rails
+    state: present
+
+- name: Ensure gem bin path is in PATH
+  lineinfile:
+    line: 'export PATH=/home/{{ app_user }}/.gem/ruby/{{ ruby_version }}/bin/:$PATH'
+    dest: '/home/{{ app_user }}/.bashrc'
+
+- name: Check if app directory exists
+  stat:
+    path: '{{ app_home }}'
+  register: app_directory
+
+- name: Init app
+  become_user: '{{ app_user }}'
+  shell: "cd /home/{{ app_user }} && rails new {{ app_name }}"
+  when: app_directory.stat.isdir is undefined or app_directory.stat.isdir == False
+
+- name: Ensure theres no sqlite dependency
+  lineinfile:
+    line: "gem 'sqlite3'"
+    dest: '{{ app_home }}/Gemfile'
+    state: absent
+
+- name: Ensure pg gem is installed
+  lineinfile:
+    line: "gem 'pg'"
+    dest: '{{ app_home }}/Gemfile'
+    state: present
+  with_items:
+    - "gem 'pg'"
+    - "gem 'rubyracer', platform: :ruby"
+
+- name: Run bundle install
+  become_user: '{{ app_user }}'
+  shell: 'cd {{ app_home }} && bundle install'
+
+- name: Config database
+  become_user: '{{ app_user }}'
+  template:
+    src: database.yml.j2
+    dest:  '{{ app_home }}/config/database.yml'
+
+- name: Check if posts scaffold already there
+  stat:
+    path: '{{ app_home }}/app/models/post.rb'
+  register: post_model
+
+- name: Generate simple scaffold
+  become_user: '{{ app_user }}'
+  shell: '{{ app_home }}/bin/rails g scaffold posts title:string body:text'
+  when: post_model.islnk is not defined # when no post model present
+
+- name: Run rake db:migrate
+  become_user: '{{ app_user }}'
+  shell: 'cd {{ app_home }} && {{ app_home }}/bin/rails db:create db:migrate'
+  ignore_errors: true
+
+- name: Check if ruby processes present
+  shell: 'ps -ef | grep ruby | grep -v grep'
+  ignore_errors: true
+  register: ruby_processes
+
+- name: Start rails server
+  become: true
+  become_user: '{{ app_user }}'
+  shell: '{{ app_home }}/bin/rails server -d -b {{ listen_address }} -p 3000'
+  when: ruby_processes.rc != 0

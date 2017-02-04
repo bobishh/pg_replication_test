@@ -1,0 +1,15 @@
+---
+- name: Install and configure pg_pool on app servers
+  hosts: web
+  become: true
+  become_user: root
+  vars:
+    ruby_install_from_source: true
+    ruby_version: 2.3.0
+    postgresql_version: 9.5
+    app_name: 'webtest'
+    app_user: vagrant
+  roles:
+    - alexey-medvedchikov.pgpool2
+    - geerlingguy.ruby
+    - plain_rails

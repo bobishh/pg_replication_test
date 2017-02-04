@@ -1,0 +1,7 @@
+---
+- name: Provision standby servers
+  hosts: data_standby
+  become: true
+  become_user: root
+  roles:
+    - open_standby_db

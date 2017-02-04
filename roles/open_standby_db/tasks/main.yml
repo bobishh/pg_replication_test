@@ -1,11 +1,12 @@
 ---
 - name: Stop the server
+  become_user: postgres
   service:
     name: postgresql
     state: stopped
 
 - name: Backup old data directory
-  shell: cd '{{ postgresql_data_directory }}/.. ;tar -cvzf /tmp/data_backup-`date +%s`.tgz {{ postgresql_data_directory }}'
+  shell: 'tar -cvzf /tmp/data_backup-`date +%s`.tgz {{ postgresql_data_directory }}'
 
 - name: Remove old data directory
   file:
@@ -16,12 +17,21 @@
   file:
     path: '{{ postgresql_data_directory }}'
     mode: go-rwx
+    owner: '{{ postgresql_admin_user }}'
     state: directory
 
 - name: Pull data from master and start replication on slave
-  shell: 'cd {{ postgres_data_directory }} && pg_basebackup -P -R -X stream -c fast -h {{ primary_host }} -U {{ postgresql_admin_user }} -D ./'
+  shell: 'cd {{ postgresql_data_directory }} && pg_basebackup -P -R -X stream -c fast -h {{ primary_host }} -U {{ postgresql_admin_user }} -D ./'
 
-- name: Start the server
+- name: Ensure /var/lib/postgresql belongs to postgres user
+  file:
+    path: /var/lib/postgresql 
+    state: directory
+    recurse: true
+    owner: postgres
+
+- name: Ensure server is started
+  become_user: postgres
   service:
     name: postgresql
     state: started

@@ -1,0 +1,29 @@
+---
+defaults: &defaults
+  adapter: postgresql
+  database: openbank
+  port: 4242
+  username: postgres
+  password: postgres
+  encoding: unicode
+  encoding: utf8
+  reconnect: true
+  pool: 4
+
+development:
+  <<: *defaults
+
+test: &test
+  <<: *defaults
+  database: openbank_test
+
+cucumber: *test
+
+production:
+  <<: *defaults
+
+staging:
+  <<: *defaults
+
+production:
+  name:
