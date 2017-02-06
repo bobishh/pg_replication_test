@@ -1,11 +1,17 @@
 ---
-- name: Set primary and standby servers
-  hosts: all
+#- name: Setup postgresql
+#  hosts: data
+#  roles:
+#   - ANXS.postgresql
+
+#- name: Set up slaves
+#  hosts: data_standby
+#  roles:
+#    - open_standby_db
+
+- name: Install pgpool2
   become: true
   become_user: root
-  vars:
-    postgres_databases:
-      - name: openbank
+  hosts: data
   roles:
-    - ANXS.postgresql
-    - postgres_post_install
+    - bobishh.pgpool2

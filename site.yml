@@ -1,6 +1,21 @@
 ---
-# Environment for testing postgresql async replication
-# and failover with pgpool2 and rails web frontends
-- include: setup_postgres.yml
-- include: add_standby.yml
-- include: web_and_pgpool2.yml
+- name: Setup postgresql
+  become: true
+  become_user: root
+  hosts: data
+  roles:
+    - ANXS.postgresql
+
+- name: Set up slaves
+  become: true
+  become_user: root
+  hosts: data_standby
+  roles:
+    - open_standby_db
+
+- name: Install pgpool2
+  become: true
+  become_user: root
+  hosts: data
+  roles:
+    - bobishh.pgpool2

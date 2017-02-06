@@ -30,12 +30,23 @@
     recurse: true
     owner: postgres
 
-- name: Ensure remote pgpool start script is present
+- name: Ensure recovery.conf is present
   template:
-    src: pgpool_remote_start.j2
-    dest: '{{ pgpool2_confdir }}/pgpool_remote_start'
-    owner: postgres
-    mode: go+rwx
+    src: recovery.conf.j2
+    dest: '{{ postgresql_data_directory }}/recovery.conf'
+    owner: '{{ postgresql_admin_user }}'
+
+- name: Ensure latest_primary file exists
+  file:
+    path: '{{ postgresql_data_directory }}/latest_primary'
+    state: touch
+    owner: '{{ postgresql_admin_user }}'
+
+- name: ... and points to current master
+  lineinfile:
+    line: '{{ primary_host }}'
+    dest: '{{ postgresql_data_directory }}/latest_primary'
+    state: present
 
 - name: Ensure server is started
   become_user: postgres

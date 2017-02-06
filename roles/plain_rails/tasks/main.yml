@@ -25,12 +25,13 @@
   copy:
     src: Gemfile
     dest: '{{ app_home }}/Gemfile'
+    owner: '{{ app_user }}'
 
-- name: Run bundle install
-  environment:
-    PATH: '/home/{{ app_user }}/.gem/ruby/{{ ruby_version }}/bin/:$PATH'
-  become_user: '{{ app_user }}'
-  shell: 'cd {{ app_home }} && bundle install'
+  #- name: Run bundle install
+  #environment:
+  #  PATH: '/home/{{ app_user }}/.gem/ruby/{{ ruby_version }}/bin/:$PATH'
+  #become_user: '{{ app_user }}'
+  #shell: 'cd {{ app_home }} && bundle install'
 
 - name: Config database
   become_user: '{{ app_user }}'

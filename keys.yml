@@ -1,0 +1,21 @@
+---
+- name: Insert keys on all hosts
+  hosts: all
+  tasks:
+    - name: Copy key to variable
+      local_action: shell cat ~/.ssh/id_rsa.pub
+      register: public_key
+    - name: Ensure .ssh folder is present
+      file:
+        path: '~/.ssh'
+        state: directory
+    - name: Ensure authorized_keys file is present
+      file:
+        path: '~/.ssh/authorized_keys'
+        state: file
+        mode: 0600
+    - name: Ensure key present as authorized
+      lineinfile: 
+        line: '{{ public_key.stdout }}'
+        dest: '~/.ssh/authorized_keys'
+        state: present
