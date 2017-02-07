@@ -15,32 +15,20 @@
     line: 'export PATH=/home/{{ app_user }}/.gem/ruby/{{ ruby_version }}/bin/:$PATH'
     dest: '/home/{{ app_user }}/.bashrc'
 
-- name: Check if app directory exists
-  stat:
+- name: Create app directory
+  file:
     path: '{{ app_home }}'
-  register: app_directory
+    state: directory
+    owner: '{{ app_user }}'
 
-- name: Init app
-  become_user: '{{ app_user }}'
-  shell: "cd /home/{{ app_user }} && rails new {{ app_name }}"
-  when: app_directory.stat.isdir is undefined or app_directory.stat.isdir == False
-
-- name: Ensure theres no sqlite dependency
-  lineinfile:
-    line: "gem 'sqlite3'"
+- name: Copy Gemfile
+  copy:
+    src: Gemfile
     dest: '{{ app_home }}/Gemfile'
-    state: absent
-
-- name: Ensure pg gem is installed
-  lineinfile:
-    line: "gem 'pg'"
-    dest: '{{ app_home }}/Gemfile'
-    state: present
-  with_items:
-    - "gem 'pg'"
-    - "gem 'rubyracer', platform: :ruby"
 
 - name: Run bundle install
+  environment:
+    PATH: '/home/{{ app_user }}/.gem/ruby/{{ ruby_version }}/bin/:$PATH'
   become_user: '{{ app_user }}'
   shell: 'cd {{ app_home }} && bundle install'
 
@@ -66,12 +54,12 @@
   ignore_errors: true
 
 - name: Check if ruby processes present
-  shell: 'ps -ef | grep ruby | grep -v grep'
+  shell: 'ps -ef | grep puma | grep -v grep'
   ignore_errors: true
-  register: ruby_processes
+  register: puma_processes
 
 - name: Start rails server
   become: true
   become_user: '{{ app_user }}'
   shell: '{{ app_home }}/bin/rails server -d -b {{ listen_address }} -p 3000'
-  when: ruby_processes.rc != 0
+  when: puma_processes.rc != 0

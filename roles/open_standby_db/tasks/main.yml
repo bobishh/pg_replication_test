@@ -12,7 +12,7 @@
   file:
     path: '{{ postgresql_data_directory }}'
     state: absent
-
+ 
 - name: Create new data directory
   file:
     path: '{{ postgresql_data_directory }}'
@@ -29,6 +29,13 @@
     state: directory
     recurse: true
     owner: postgres
+
+- name: Ensure remote pgpool start script is present
+  template:
+    src: pgpool_remote_start.j2
+    dest: '{{ pgpool2_confdir }}/pgpool_remote_start'
+    owner: postgres
+    mode: go+rwx
 
 - name: Ensure server is started
   become_user: postgres

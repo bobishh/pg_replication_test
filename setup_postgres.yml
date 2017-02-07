@@ -8,3 +8,4 @@
       - name: openbank
   roles:
     - ANXS.postgresql
+    - postgres_post_install

@@ -1,5 +1,10 @@
 ---
 pgpool2_pool_passwd: 'postgres'
+pgpool2_listen_addresses: '*'
+pgpool2_auto_reattach: true
+
+pgpool2_confdir: /etc/pgpool2
+
 pgpool2_pool_user: 'postgres'
 
 pgpool2_sr_check_period: 1
@@ -33,6 +38,10 @@ delay_threshold: 2048
 
 pgpool2_master_slave_mode: on
 pgpool2_master_slave_sub_mode: stream
+
+pgpool2_failover_command: '{{ pgpool2_confdir }}/failover.sh %d %M %H %R'
+
+pgpool2_recovery_1st_stage_command: 'recovery_1st_stage'
 
 pgpool2_port: 4242
 

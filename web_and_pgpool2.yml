@@ -11,5 +11,5 @@
     app_user: vagrant
   roles:
     - alexey-medvedchikov.pgpool2
-    - geerlingguy.ruby
-    - plain_rails
+    #- geerlingguy.ruby
+    #- plain_rails
