@@ -19,3 +19,12 @@
   hosts: data
   roles:
     - bobishh.pgpool2
+
+# This one is pretty insecure
+- name: Ensure ssh connectivity would not cause problems
+  become_user: root
+  file:
+    src: ssh_config
+    dest: ~/.ssh/config
+    mode: 0600
+    owner: root
