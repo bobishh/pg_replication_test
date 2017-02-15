@@ -14,13 +14,15 @@
     state: absent
  
 - name: Create new data directory
+  become_user: '{{ postgresql_admin_user }}'
   file:
     path: '{{ postgresql_data_directory }}'
-    mode: go-rwx
+    mode: 0700
     owner: '{{ postgresql_admin_user }}'
     state: directory
 
 - name: Pull data from master and start replication on slave
+  become_user: '{{ postgresql_admin_user }}'
   shell: 'cd {{ postgresql_data_directory }} && pg_basebackup -P -R -X stream -c fast -h {{ primary_host }} -U {{ postgresql_admin_user }} -D ./'
 
 - name: Ensure /var/lib/postgresql belongs to postgres user

@@ -15,3 +15,10 @@
   hosts: data
   roles:
     - bobishh.pgpool2
+
+  #- name: Install extension
+  #hosts:
+  #  - data_primary
+  #tasks:
+  #  - name: Install pgpool_recovery extension
+  #    shell: 'psql -U {{ postgresql_admin_user }} -p {{ pgpool2_port }} < "create extension pgpool_recovery"'
